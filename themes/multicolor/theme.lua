@@ -1,10 +1,3 @@
---[[
-
-     Multicolor Awesome WM theme 2.0
-     github.com/lcpz
-
---]]
-
 local gears = require("gears")
 local lain  = require("lain")
 local awful = require("awful")
@@ -16,15 +9,15 @@ local my_table = awful.util.table or gears.table -- 4.{0,1} compatibility
 
 local theme                                     = {}
 theme.confdir                                   = os.getenv("HOME") .. "/.config/awesome/themes/multicolor"
-theme.wallpaper                                 = "~/pictures/sun.png"
-theme.font                                      = "xos4 Terminus 8"
+theme.wallpaper                                 = "~/pictures/cityblur.png"
+theme.font                                      = "Misc Tamsyn 8"  --"xos4 Terminus 8"
 theme.menu_bg_normal                            = "#000000"
 theme.menu_bg_focus                             = "#000000"
 theme.bg_normal                                 = "#000000"
 theme.bg_focus                                  = "#000000"
 theme.bg_urgent                                 = "#000000"
 theme.fg_normal                                 = "#aaaaaa"
-theme.fg_focus                                  = "#ff8c00"
+theme.fg_focus                                  = "#d646c5"   --"#ff8c00"
 theme.fg_urgent                                 = "#af1d18"
 theme.fg_minimize                               = "#ffffff"
 theme.border_width                              = dpi(2)
@@ -35,7 +28,7 @@ theme.menu_border_width                         = 0
 theme.menu_width                                = dpi(130)
 theme.menu_submenu_icon                         = theme.confdir .. "/icons/submenu.png"
 theme.menu_fg_normal                            = "#aaaaaa"
-theme.menu_fg_focus                             = "#ff8c00"
+theme.menu_fg_focus                             = "#d646c5"
 theme.menu_bg_normal                            = "#050505dd"
 theme.menu_bg_focus                             = "#050505dd"
 theme.widget_temp                               = theme.confdir .. "/icons/temp.png"
@@ -52,8 +45,8 @@ theme.widget_mail                               = theme.confdir .. "/icons/mail.
 theme.widget_batt                               = theme.confdir .. "/icons/bat.png"
 theme.widget_clock                              = theme.confdir .. "/icons/clock.png"
 theme.widget_vol                                = theme.confdir .. "/icons/spkr.png"
-theme.taglist_squares_sel                       = theme.confdir .. "/icons/square_a.png"
-theme.taglist_squares_unsel                     = theme.confdir .. "/icons/square_b.png"
+-- theme.taglist_squares_sel                       = theme.confdir .. "/icons/square_a.png"
+-- theme.taglist_squares_unsel                     = theme.confdir .. "/icons/square_b.png"
 theme.tasklist_plain_task_name                  = true
 theme.tasklist_disable_icon                     = true
 -- theme.useless_gap                               = 5
@@ -103,24 +96,24 @@ mytextclock.font = theme.font
 theme.cal = lain.widget.cal({
     attach_to = { mytextclock },
     notification_preset = {
-        font = "xos4 Terminus 10",
+        font = "Misc Tamsyn 10",
         fg   = theme.fg_normal,
         bg   = theme.bg_normal
     }
 })
 
 -- Weather
-local weathericon = wibox.widget.imagebox(theme.widget_weather)
-theme.weather = lain.widget.weather({
-    city_id = 2643743, -- placeholder (London)
-    notification_preset = { font = "xos4 Terminus 10", fg = theme.fg_normal },
-    weather_na_markup = markup.fontfg(theme.font, "#eca4c4", "N/A "),
-    settings = function()
-        descr = weather_now["weather"][1]["description"]:lower()
-        units = math.floor(weather_now["main"]["temp"])
-        widget:set_markup(markup.fontfg(theme.font, "#eca4c4", descr .. " @ " .. units .. "°C "))
-    end
-})
+-- local weathericon = wibox.widget.imagebox(theme.widget_weather)
+-- theme.weather = lain.widget.weather({
+--     city_id = 2643743, -- placeholder (London)
+--     notification_preset = { font = "xos4 Terminus 10", fg = theme.fg_normal },
+--     weather_na_markup = markup.fontfg(theme.font, "#eca4c4", "N/A "),
+--     settings = function()
+--         descr = weather_now["weather"][1]["description"]:lower()
+--         units = math.floor(weather_now["main"]["temp"])
+--         widget:set_markup(markup.fontfg(theme.font, "#eca4c4", descr .. " @ " .. units .. "°C "))
+--     end
+-- })
 
 -- / fs
 --[[ commented because it needs Gio/Glib >= 2.54
@@ -165,12 +158,12 @@ local cpu = lain.widget.cpu({
 })
 
 -- Coretemp
-local tempicon = wibox.widget.imagebox(theme.widget_temp)
-local temp = lain.widget.temp({
-    settings = function()
-        widget:set_markup(markup.fontfg(theme.font, "#f1af5f", coretemp_now .. "°C "))
-    end
-})
+-- local tempicon = wibox.widget.imagebox(theme.widget_temp)
+-- local temp = lain.widget.temp({
+--     settings = function()
+--         widget:set_markup(markup.fontfg(theme.font, "#f1af5f", coretemp_now .. "°C "))
+--     end
+-- })
 
 -- Battery
 local baticon = wibox.widget.imagebox(theme.widget_batt)
@@ -199,21 +192,21 @@ theme.volume = lain.widget.alsa({
 })
 
 -- Net
-local netdownicon = wibox.widget.imagebox(theme.widget_netdown)
-local netdowninfo = wibox.widget.textbox()
-local netupicon = wibox.widget.imagebox(theme.widget_netup)
-local netupinfo = lain.widget.net({
-    settings = function()
-        if iface ~= "network off" and
-           string.match(theme.weather.widget.text, "N/A")
-        then
-            theme.weather.update()
-        end
+-- local netdownicon = wibox.widget.imagebox(theme.widget_netdown)
+-- local netdowninfo = wibox.widget.textbox()
+-- local netupicon = wibox.widget.imagebox(theme.widget_netup)
+-- local netupinfo = lain.widget.net({
+--     settings = function()
+--         if iface ~= "network off" and
+--            string.match(theme.weather.widget.text, "N/A")
+--         then
+--             theme.weather.update()
+--         end
 
-        widget:set_markup(markup.fontfg(theme.font, "#e54c62", net_now.sent .. " "))
-        netdowninfo:set_markup(markup.fontfg(theme.font, "#87af5f", net_now.received .. " "))
-    end
-})
+--         widget:set_markup(markup.fontfg(theme.font, "#e54c62", net_now.sent .. " "))
+--         netdowninfo:set_markup(markup.fontfg(theme.font, "#87af5f", net_now.received .. " "))
+--     end
+-- })
 
 -- MEM
 local memicon = wibox.widget.imagebox(theme.widget_mem)
