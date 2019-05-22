@@ -1,10 +1,3 @@
---[[
-
-   awesome wm configuration template
-   github.com/lcpz
-
---]]
-
 -- {{{ Required libraries
 local awesome, client, mouse, screen, tag = awesome, client, mouse, screen, tag
 local ipairs, string, os, table, tostring, tonumber, type = ipairs, string, os, table, tostring, tonumber, type
@@ -91,15 +84,14 @@ local modkey       = "Mod4"
 local altkey       = "Mod1"
 local terminal     = "alacritty"
 local editor       = os.getenv("EDITOR") or "nvim"
-local gui_editor   = "gvim"
+local gui_editor   = "emacs"
 local browser      = "firefox"
-local guieditor    = "gvim"
+local guieditor    = "emacs"
 local scrlocker    = "i3-lock-fancy"
 
 awful.util.terminal = terminal
 awful.util.tagnames = { "dev", "web", "chat", "books", "media", "extra" }
 awful.layout.layouts = {
-    -- OPTIONS::
     awful.layout.suit.tile,
     awful.layout.suit.spiral,
     awful.layout.suit.tile.left,
@@ -177,15 +169,15 @@ awful.util.tasklist_buttons = my_table.join(
     awful.button({ }, 5, function () awful.client.focus.byidx(-1) end)
 )
 
-lain.layout.termfair.nmaster           = 3
-lain.layout.termfair.ncol              = 1
-lain.layout.termfair.center.nmaster    = 3
-lain.layout.termfair.center.ncol       = 1
-lain.layout.cascade.tile.offset_x      = dpi(2)
-lain.layout.cascade.tile.offset_y      = dpi(32)
-lain.layout.cascade.tile.extra_padding = dpi(5)
-lain.layout.cascade.tile.nmaster       = 5
-lain.layout.cascade.tile.ncol          = 2
+-- lain.layout.termfair.nmaster           = 3
+-- lain.layout.termfair.ncol              = 1
+-- lain.layout.termfair.center.nmaster    = 3
+-- lain.layout.termfair.center.ncol       = 1
+-- lain.layout.cascade.tile.offset_x      = dpi(2)
+-- lain.layout.cascade.tile.offset_y      = dpi(32)
+-- lain.layout.cascade.tile.extra_padding = dpi(5)
+-- lain.layout.cascade.tile.nmaster       = 5
+-- lain.layout.cascade.tile.ncol          = 2
 
 beautiful.init(string.format("%s/.config/awesome/themes/%s/theme.lua", os.getenv("HOME"), chosen_theme))
 -- }}}
@@ -212,8 +204,8 @@ awful.util.mymainmenu = freedesktop.menu.build({
 
 
 -- No gaps when single window
-beautiful.useless_gap = 3
-beautiful.gap_single_client = false
+-- beautiful.useless_gap = 3
+-- beautiful.gap_single_client = false
 
 
 -- hide menu when mouse leaves it
@@ -349,10 +341,10 @@ globalkeys = my_table.join(
         {description = "toggle wibox", group = "awesome"}),
 
     -- On the fly useless gaps change
-    awful.key({ altkey, "Control" }, "+", function () lain.util.useless_gaps_resize(1) end,
-              {description = "increment useless gaps", group = "tag"}),
-    awful.key({ altkey, "Control" }, "-", function () lain.util.useless_gaps_resize(-1) end,
-              {description = "decrement useless gaps", group = "tag"}),
+    -- awful.key({ altkey, "Control" }, "+", function () lain.util.useless_gaps_resize(1) end,
+    --           {description = "increment useless gaps", group = "tag"}),
+    -- awful.key({ altkey, "Control" }, "-", function () lain.util.useless_gaps_resize(-1) end,
+    --           {description = "decrement useless gaps", group = "tag"}),
 
     -- Dynamic tagging
     awful.key({ modkey, "Shift" }, "n", function () lain.util.add_tag() end,
@@ -367,7 +359,9 @@ globalkeys = my_table.join(
               {description = "delete tag", group = "tag"}),
 
     -- Standard program
-    awful.key({ modkey,           }, "Return", function () awful.spawn(terminal .. " -e tmux -u") end,
+    awful.key({ modkey,           }, "Return", function () awful.spawn(terminal) end,
+              {description = "open a terminal", group = "launcher"}),
+    awful.key({ modkey, "Shift"   }, "Return", function () awful.spawn(terminal .. " -e tmux -u") end,
               {description = "open a terminal", group = "launcher"}),
     awful.key({ modkey, "Control" }, "r", awesome.restart,
               {description = "reload awesome", group = "awesome"}),
@@ -421,6 +415,8 @@ globalkeys = my_table.join(
               {description = "-10%", group = "hotkeys"}),
 
     -- ALSA volume control
+    awful.key({ modkey,           }, "m", function () awful.spawn(terminal .. " -e ncmpcpp") end,
+              {description = "open a terminal", group = "launcher"}),
     awful.key({ altkey }, "Up",
         function ()
             os.execute(string.format("amixer -q set %s 1%%+", beautiful.volume.channel))
@@ -511,7 +507,8 @@ globalkeys = my_table.join(
     --]]
     ---{{{ dmenu
     awful.key({ modkey }, "d", function ()
-            os.execute(string.format("dmenu_run -nb '#222222' -sf '#eeeeee' -sb '#d646c5' -nf '#bbbbbb'",
+            os.execute(string.format("rofi -show run",
+            -- os.execute(string.format("dmenu_run -fn monospace:10 -nb '#222222' -sf '#eeeeee' -sb '#d646c5' -nf '#bbbbbb'",
             beautiful.bg_normal, beautiful.fg_normal, beautiful.bg_focus, beautiful.fg_focus))
         end,
         {description = "show dmenu", group = "launcher"}),
@@ -571,7 +568,7 @@ clientkeys = my_table.join(
             c.minimized = true
         end ,
         {description = "minimize", group = "client"}),
-    awful.key({ modkey,           }, "m",
+    awful.key({ modkey, "Shift"   }, "m",
         function (c)
             c.maximized = not c.maximized
             c:raise()
@@ -758,21 +755,31 @@ end)
 -- end)
 
 -- Titlebars only on floating windows
+client.connect_signal("property::layout", function(c)
+    if c.floating == false and c.first_tag.layout.name == "floating" then
+        c.border_width = beautiful.border_width
+    end
+end)
+
 client.connect_signal("property::floating", function(c)
-    if c.floating then
+    local b = false;
+    if c.first_tag ~= nil then
+        b = c.first_tag.layout.name == "floating"
+    end
+    if c.floating or b then
         awful.titlebar.show(c)
     else
         awful.titlebar.hide(c)
     end
 end)
 
-client.connect_signal("manage", function(c)
+function dynamic_title(c)
     if c.floating or c.first_tag.layout.name == "floating" then
         awful.titlebar.show(c)
     else
         awful.titlebar.hide(c)
     end
-end)
+end
 
 tag.connect_signal("property::layout", function(t)
     local clients = t:clients()
@@ -785,39 +792,21 @@ tag.connect_signal("property::layout", function(t)
     end
 end)
 
--- function filter(t, cb)
---    local new_t = {}
---    for _, v in ipairs(t) do
---       if cb(v) then
---         new_t[#new_t + 1] = v
---       end
---    end
---    return new_t
--- end
-
--- No borders if only 1 non floating or maximised client visible
-function border_adjust(c)
-    if #c.screen.clients == 1 then
-        c.border_width = 0
-    elseif #c.screen.clients > 1 then
-c.border_width = beautiful.border_width
-c.border_color = beautiful.border_focus
+-- No borders if only one tiled client -- always borders on floating
+screen.connect_signal("arrange", function(s)
+    for _, c in pairs(s.clients) do
+        if #s.tiled_clients == 1 and c.floating == false and c.first_tag.layout.name ~= "floating" then
+            c.border_width = 0
+        elseif #s.tiled_clients > 1 or c.floating or c.first_tag.layout.name == "floating" then
+            c.border_width = beautiful.border_width
+        end
     end
-end
+end)
 
--- No gaps if only one window on screen
--- function gap_adjust(c)
---     if #c.screen.clients == 1 then
---         beautiful.useless_gap = 0
---     elseif #c.screen.clients > 1 then
---         beautiful.useless_gap = 3
---     end
--- end
-client.connect_signal("property::maximized", border_adjust)
-client.connect_signal("focus", border_adjust)
-client.connect_signal("unfocus", border_adjust)
--- client.connect_signal("focus", gap_adjust)
+client.connect_signal("manage", dynamic_title)
+client.connect_signal("tagged", dynamic_title)
 client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
+client.connect_signal("focus", function(c) c.border_color = beautiful.border_focus end)
 
 -- possible workaround for tag preservation when switching back to default screen:
 -- https://github.com/lcpz/awesome-copycats/issues/251
