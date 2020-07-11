@@ -1,4 +1,4 @@
-local gears = require("gears")
+llocal gears = require("gears")
 local lain  = require("lain")
 local awful = require("awful")
 local wibox = require("wibox")
@@ -9,28 +9,28 @@ local my_table = awful.util.table or gears.table -- 4.{0,1} compatibility
 
 local theme                                     = {}
 theme.confdir                                   = os.getenv("HOME") .. "/.config/awesome/themes/multicolor"
-theme.wallpaper                                 = "~/pictures/cityblur.png"
-theme.font                                      = "Misc Tamsyn 8"  --"xos4 Terminus 8"
+theme.wallpaper                                 = "~/pictures/pacwall.jpg"
+theme.font                                      = "UbuntuMono Nerd Font Mono 10"  --"xos4 Terminus 8"
 theme.menu_bg_normal                            = "#000000"
 theme.menu_bg_focus                             = "#000000"
-theme.bg_normal                                 = "#000000"
-theme.bg_focus                                  = "#000000"
-theme.bg_urgent                                 = "#000000"
-theme.fg_normal                                 = "#aaaaaa"
-theme.fg_focus                                  = "#d646c5"   --"#ff8c00"
-theme.fg_urgent                                 = "#af1d18"
+theme.bg_normal                                 = "#dfdfdf"
+theme.bg_focus                                  = "#dfdfdf"
+theme.bg_urgent                                 = "#dfdfdf"
+theme.fg_normal                                 = "#606060"
+theme.fg_focus                                  = "#007e7d"   --"#ff8c00"
+theme.fg_urgent                                 = "#606060"
 theme.fg_minimize                               = "#ffffff"
-theme.border_width                              = dpi(2)
-theme.border_normal                             = "#1c2022"
-theme.border_focus                              = "#606060"
+theme.border_width                              = dpi(4)
+theme.border_normal                             = "#DFDFDF" --"#1c2022"
+theme.border_focus                              = "#505050" --"#606060"
 theme.border_marked                             = "#3ca4d8"
 theme.menu_border_width                         = 0
 theme.menu_width                                = dpi(130)
 theme.menu_submenu_icon                         = theme.confdir .. "/icons/submenu.png"
-theme.menu_fg_normal                            = "#aaaaaa"
-theme.menu_fg_focus                             = "#d646c5"
-theme.menu_bg_normal                            = "#050505dd"
-theme.menu_bg_focus                             = "#050505dd"
+theme.menu_fg_normal                            = "#606060"
+theme.menu_fg_focus                             = "#007e7d"
+theme.menu_bg_normal                            = "#dfdfdf"
+theme.menu_bg_focus                             = "#dfdfdf"
 theme.widget_temp                               = theme.confdir .. "/icons/temp.png"
 theme.widget_uptime                             = theme.confdir .. "/icons/ac.png"
 theme.widget_cpu                                = theme.confdir .. "/icons/cpu.png"
@@ -49,7 +49,7 @@ theme.widget_vol                                = theme.confdir .. "/icons/spkr.
 -- theme.taglist_squares_unsel                     = theme.confdir .. "/icons/square_b.png"
 theme.tasklist_plain_task_name                  = true
 theme.tasklist_disable_icon                     = true
--- theme.useless_gap                               = 5
+theme.useless_gap                               = 10
 theme.layout_tile                               = theme.confdir .. "/icons/tile.png"
 theme.layout_tilegaps                           = theme.confdir .. "/icons/tilegaps.png"
 theme.layout_tileleft                           = theme.confdir .. "/icons/tileleft.png"
@@ -256,7 +256,7 @@ function theme.at_screen_connect(s)
     gears.wallpaper.maximized(wallpaper, s, true)
 
     -- Tags
-    awful.tag(awful.util.tagnames, s, awful.layout.layouts)
+    awful.tag(awful.util.tagnames, s, awful.layout.layouts[1])
 
     -- Create a promptbox for each screen
     s.mypromptbox = awful.widget.prompt()
@@ -276,13 +276,14 @@ function theme.at_screen_connect(s)
     s.mytasklist = awful.widget.tasklist(s, awful.widget.tasklist.filter.currenttags, awful.util.tasklist_buttons)
 
     -- Create the wibox
-    s.mywibox = awful.wibar({ position = "top", screen = s, height = dpi(20), bg = theme.bg_normal, fg = theme.fg_normal })
+    s.mywibox = awful.wibar({ position = "bottom", screen = s, height = dpi(20), bg = theme.bg_normal, fg = theme.fg_normal })
 
     -- Add widgets to the wibox
     s.mywibox:setup {
         layout = wibox.layout.align.horizontal,
         { -- Left widgets
             layout = wibox.layout.fixed.horizontal,
+            -- s.myawesomemenu
             --s.mylayoutbox,
             s.mytaglist,
             s.mypromptbox,
@@ -316,7 +317,7 @@ function theme.at_screen_connect(s)
             bat.widget,
             clockicon,
             mytextclock,
-            s.mylayoutbox,
+            -- s.mylayoutbox,
         },
     }
     -- -- Create the bottom wibox
@@ -337,4 +338,3 @@ function theme.at_screen_connect(s)
 end
 
 return theme
-
